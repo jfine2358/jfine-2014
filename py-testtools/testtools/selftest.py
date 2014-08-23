@@ -21,7 +21,9 @@ def add(x, y):
 if 1:
     # Pick out and evaluate all suitable expressions.
     for line in tree.body:
-        value = line.value
+        value = getattr(line, 'value', None)
+        if value is None:
+            continue
 
         if type(value) is ast.Compare:
             ops = value.ops
@@ -40,3 +42,38 @@ if 1:
                     eval(bb, dict(add=add))
                     for bb in bbb
                     ))
+
+
+if 1:
+    class Transformer(ast.NodeTransformer):
+
+        def __init__(self):
+            super(Transformer, self).__init__()
+            self.index = 0
+
+        def generic_visit(self, node):
+
+            body = getattr(node, 'body', None)
+            if body is None:
+                super(Transformer, self).generic_visit(node)
+                return node
+            else:
+                node.body = [
+                    ast.parse('an_expression_was_here')
+                    if type(line) is ast.Expr
+                    else self.generic_visit(line)
+                    for line in body
+                    ]
+                return node
+
+
+
+Transformer().visit(tree)
+
+try:
+    import astkit
+except ImportError:
+    astkit = None
+
+if astkit:
+    print(astkit.render.SourceCodeRenderer.render(tree))

@@ -1,6 +1,9 @@
 todo Use a**b for raising exceptions.
-todo Allow a = b = c = d.
+done Allow a == b == c == d.
 todo Allow a(b, c, d) is True.
-todo Store tests in external file.
+done Store tests in external file.
 todo Create test suite.
 todo Raise exception for unprocessed code in test file.
+todo Create body/expr transformer
+todo Store compiled expression
+todo Produce demonstration test runner
