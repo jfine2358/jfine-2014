@@ -13,5 +13,8 @@ with open(filename) as f:
 if 0:
     print(ast.dump(tree))
 
+if 1:
     for line in tree.body:
-        print(ast.dump(line))
+        # Each line has a name, which determines its type.
+        name = type(line.value).__name__
+        print(name)
