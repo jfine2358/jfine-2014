@@ -17,7 +17,7 @@ for line in a.body:
         value = line.value
 
         if isinstance(value, Compare):
-            print value
+            print(value)
 
             ops = value.ops
 
