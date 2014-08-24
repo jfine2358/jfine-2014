@@ -2,6 +2,7 @@
 
 import ast
 import os
+import marshal
 
 try:
     import astkit as tmp
@@ -91,18 +92,22 @@ def subst(expr):
 
 def log_compare(node):
 
+    # TODO: I think this is done, but is it?
     # Replace compare node with log._compare.
     # Produce the ops.
     ops = node.ops
     ops_arg = [type(op).__name__ for op in ops]
 
-    # Produce the comps.
-    comps = [node.left] + node.comparators
+    # Produce the values.
+    values = [node.left] + node.comparators
+    val_args = [
+        marshal.dumps(compile(ast.Expression(v), '', 'eval'))
+        for v in values
+        ]
 
     # Done so return new node.
-    format = 'log._compare(globals(), locals(), {0})'.format
-    return  ast.parse(format(ops_arg))
-
+    format = 'log._compare(globals(), locals(), {0}, {1})'.format
+    return  ast.parse(format(ops_arg, val_args))
 
 
 edit_body_exprs(subst, tree)
