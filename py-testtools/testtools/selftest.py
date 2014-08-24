@@ -78,11 +78,15 @@ def edit_body_exprs(fn, tree):
 
 
 def subst(expr):
-    '''Simply replace by a dummy expression.'''
+    '''Start making the changes I want.'''
 
-    print(ast_render(expr))
+    value = expr.value
 
-    return  ast.parse('an_expression_was_here')
+    # Filter the comparisons for change.
+    if type(expr.value) is ast.Compare:
+        return  ast.parse('a_comparison_was_here')
+    else:
+        return expr             # Leave unchanged.
 
 
 edit_body_exprs(subst, tree)

@@ -10,4 +10,7 @@ a = [ x * x
   if x.y is z
 ]
 
+aaa(3, 4, ddd=5)
+rrr ** sss
+
 import wibble
