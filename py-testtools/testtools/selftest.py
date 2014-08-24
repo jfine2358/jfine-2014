@@ -44,12 +44,12 @@ if 1:
                     ))
 
 
-if 1:
-    class Transformer(ast.NodeTransformer):
+def edit_body_exprs(fn, tree):
+    '''Use fn to edit expressions used as statements.
+    '''
 
-        def __init__(self):
-            super(Transformer, self).__init__()
-            self.index = 0
+    # TODO: I don't like this use of subclassing.
+    class Transformer(ast.NodeTransformer):
 
         def generic_visit(self, node):
 
@@ -59,16 +59,23 @@ if 1:
                 return node
             else:
                 node.body = [
-                    ast.parse('an_expression_was_here')
+                    fn(line)
                     if type(line) is ast.Expr
                     else self.generic_visit(line)
                     for line in body
                     ]
                 return node
 
+    # We're editing the tree, not visiting it.
+    return Transformer().visit(tree)
 
 
-Transformer().visit(tree)
+def subst(line):
+    '''Simply replace by a dummy expression.'''
+    return  ast.parse('an_expression_was_here')
+
+
+edit_body_exprs(subst, tree)
 
 try:
     import astkit
