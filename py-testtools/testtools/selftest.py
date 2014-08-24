@@ -3,6 +3,13 @@
 import ast
 import os
 
+try:
+    import astkit as tmp
+    ast_render = tmp.render.SourceCodeRenderer.render
+    del tmp
+except ImportError:
+    ast_render = ast.dump
+
 dirname = os.path.dirname(__file__)
 
 filename = os.path.join(dirname, 'test_add.py')
@@ -70,17 +77,16 @@ def edit_body_exprs(fn, tree):
     return Transformer().visit(tree)
 
 
-def subst(line):
+def subst(expr):
     '''Simply replace by a dummy expression.'''
+
+    print(ast_render(expr))
+
     return  ast.parse('an_expression_was_here')
 
 
 edit_body_exprs(subst, tree)
 
-try:
-    import astkit
-except ImportError:
-    astkit = None
 
-if astkit:
-    print(astkit.render.SourceCodeRenderer.render(tree))
+if ast_render:
+    print(ast_render(tree))
