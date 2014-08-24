@@ -1,0 +1,115 @@
+import ast
+import os
+import marshal
+
+__metaclass__ = type
+
+class Script:
+
+    def __init__(self, source, filename='<unknown>'):
+
+        self.filename = filename
+        tree = ast.parse(source, filename=self.filename)
+
+        # Replace some body expressions by calls to log.
+        edit_body_exprs(edit_expr, tree)
+
+        # Save the compiled code.
+        self.code = compile(tree, self.filename, 'exec')
+
+
+# This function helps defined the tranformation we want.
+def edit_expr(expr):
+    '''Start making the changes I want.'''
+
+    value = expr.value
+
+    # Filter the comparisons for change.
+    if type(value) is ast.Compare:
+        return  log_compare(value)
+    else:
+        return expr             # Leave unchanged.
+
+
+# This function helps defined the tranformation we want.
+def log_compare(node):
+
+    # TODO: I think this is done, but is it?
+    # Replace compare node with log._compare.
+    # Produce the ops.
+    ops = node.ops
+    ops_arg = [type(op).__name__ for op in ops]
+
+    # Produce the values.
+    values = [node.left] + node.comparators
+    val_args = [
+        marshal.dumps(compile(ast.Expression(v), '', 'eval'))
+        for v in values
+        ]
+
+    # Done so return new node.
+    format = 'log._compare(globals(), locals(), {0}, {1})'.format
+    # TODO: Clean up this mess.
+    # TODO: Check that body appears just where I expect.
+    if 0:
+        new_tree = ast.parse(format(ops_arg, val_args), mode='eval')
+        # TODO: Above value produces: Expression(body=Call(func=Attribute(value=Name(id='log'
+    else:
+        new_tree = ast.parse(format(ops_arg, val_args), mode='exec')
+
+    # To avoid: Module(body=[Module(body=[Expr(value=Call( ...
+    return new_tree.body[0]
+
+
+# This utility function is based on ast module.
+def edit_body_exprs(fn, tree):
+    '''Use fn to edit expressions used as statements.
+    '''
+    # TODO: I don't like this use of subclassing.
+    class Transformer(ast.NodeTransformer):
+
+        def generic_visit(self, node):
+
+            body = getattr(node, 'body', None)
+            if body is None:
+                super(Transformer, self).generic_visit(node)
+                return node
+            else:
+                node.body = [
+                    fn(line)
+                    if type(line) is ast.Expr
+                    else self.generic_visit(line)
+                    for line in body
+                    ]
+                return node
+
+    # We're editing the tree, not visiting it.
+    return Transformer().visit(tree)
+
+
+if __name__ == '__main__':
+
+
+    # Here's how to create a script from a file.
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'test_add.py')
+    with open(filename) as f:
+        script = Script(f.read())
+
+    # Here's a dummy log, for testing Script.
+    class DummyLog:
+
+        def __init__(self):
+            self.store = []
+
+        def _compare(self, *argv):
+            self.store.append(argv[2:])
+
+    # Here we create and test a script.
+    s = Script('2 + 2 == 5')
+    dummy = DummyLog()
+    eval(s.code, dict(log=dummy))
+    dummy.store[0]
+    assert dummy.store[0][0] == ['Eq']
+    assert dummy.store[0][1] \
+        == [marshal.dumps(compile(s, '', 'eval')) for s in ('2 + 2', '5')]

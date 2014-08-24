@@ -27,3 +27,8 @@ todo avoid premature optimisation
 todo tracebacks for test failure
 todo acknowledgements
 todo eat own dog food
+
+
+TypeError: Error when calling the metaclass bases
+    type 'code' is not an acceptable base type
+http://stackoverflow.com/questions/10061752/which-classes-cannot-be-subclassed
