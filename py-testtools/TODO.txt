@@ -23,3 +23,7 @@ todo move code objects to top of 'module'
 todo use literal_eval?
 todo ast.parse(..., mode='eval')
 todo avoid premature optimisation
+
+todo tracebacks for test failure
+todo acknowledgements
+todo eat own dog food
