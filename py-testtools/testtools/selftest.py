@@ -83,10 +83,26 @@ def subst(expr):
     value = expr.value
 
     # Filter the comparisons for change.
-    if type(expr.value) is ast.Compare:
-        return  ast.parse('a_comparison_was_here')
+    if type(value) is ast.Compare:
+        return  log_compare(value)
     else:
         return expr             # Leave unchanged.
+
+
+def log_compare(node):
+
+    # Replace compare node with log._compare.
+    # Produce the ops.
+    ops = node.ops
+    ops_arg = [type(op).__name__ for op in ops]
+
+    # Produce the comps.
+    comps = [node.left] + node.comparators
+
+    # Done so return new node.
+    format = 'log._compare(globals(), locals(), {0})'.format
+    return  ast.parse(format(ops_arg))
+
 
 
 edit_body_exprs(subst, tree)
