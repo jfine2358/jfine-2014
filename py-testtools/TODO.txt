@@ -16,6 +16,8 @@ todo implement log._compare etc
 todo provide the mytest.run(log, obj)
 todo architecture - divide into components
 todo use try_eval, with suitable return values
+todo no need to pass globals() - make property of log
+todo can store code in globals (or log)
 
 todo move code objects to top of 'module'
 todo use literal_eval?
