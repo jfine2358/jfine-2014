@@ -109,7 +109,13 @@ def log_compare(node):
 
     # Done so return new node.
     format = 'log._compare(globals(), locals(), {0}, {1})'.format
-    new_tree = ast.parse(format(ops_arg, val_args))
+    # TODO: Clean up this mess.
+    # TODO: Check that body appears just where I expect.
+    if 0:
+        new_tree = ast.parse(format(ops_arg, val_args), mode='eval')
+        # TODO: Above value produces: Expression(body=Call(func=Attribute(value=Name(id='log'
+    else:
+        new_tree = ast.parse(format(ops_arg, val_args), mode='exec')
 
     # To avoid: Module(body=[Module(body=[Expr(value=Call( ...
     return new_tree.body[0]
