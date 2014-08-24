@@ -11,3 +11,13 @@ todo Produce demonstration test runner
 done refactor Transformer so function is parameter
 done store compiled expressions in place
 todo test as we go along
+
+todo implement log._compare etc
+todo provide the mytest.run(log, obj)
+todo architecture - divide into components
+todo use try_eval, with suitable return values
+
+todo move code objects to top of 'module'
+todo use literal_eval?
+todo ast.parse(..., mode='eval')
+todo avoid premature optimisation
