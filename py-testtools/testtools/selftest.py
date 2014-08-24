@@ -4,6 +4,8 @@ import ast
 import os
 import marshal
 
+__metaclass__ = type
+
 try:
     import astkit as tmp
     ast_render = tmp.render.SourceCodeRenderer.render
@@ -107,10 +109,32 @@ def log_compare(node):
 
     # Done so return new node.
     format = 'log._compare(globals(), locals(), {0}, {1})'.format
-    return  ast.parse(format(ops_arg, val_args))
+    new_tree = ast.parse(format(ops_arg, val_args))
+
+    # To avoid: Module(body=[Module(body=[Expr(value=Call( ...
+    return new_tree.body[0]
+
+def add(x, y):
+    return x + y
+
+class Log:
+
+    def _compare(self, loc, glob, ops, args):
+
+        # Evaluate prior to comparison.
+        codes = [marshal.loads(item) for item in args]
+        values = [
+            eval(co, dict(add=add)) # TODO: Yuck.
+            for co in codes
+            ]
+
+        print(('compare', ops, values))
 
 
-edit_body_exprs(subst, tree)
+if 1:
+    edit_body_exprs(subst, tree)
+    co = compile(tree, '', 'exec')
+    eval(co, dict(log=Log()))
 
 
 if ast_render:

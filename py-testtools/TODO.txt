@@ -6,8 +6,8 @@ todo Create test suite.
 todo Raise exception for unprocessed code in test file.
 
 done 0.5 Create body/expr transformer
-todo Store compiled expression
+done store compiled expression
 todo Produce demonstration test runner
 done refactor Transformer so function is parameter
-todo store compiled expressions in place
+done store compiled expressions in place
 todo test as we go along

@@ -5,12 +5,13 @@ add(3, 4) == add(4, 3) == 7
 if 4 == 5:
     add(4, 5) == 9
 
-a = [ x * x
-  for x in aaa
-  if x.y is z
-]
+if 0:
+    a = [ x * x
+      for x in aaa
+      if x.y is z
+    ]
 
-aaa(3, 4, ddd=5)
-rrr ** sss
+    aaa(3, 4, ddd=5)
+    rrr ** sss
 
-import wibble
+    import wibble
