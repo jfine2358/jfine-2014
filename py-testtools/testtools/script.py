@@ -15,6 +15,20 @@ class Script:
         self.code = compile(tree, self.filename, 'exec')
 
 
+    def run(self, evaluator, log=None, obj=None):
+        '''Run script, rewritten expression passed to evaluator.
+
+        The evaluator might be a test routine.
+        '''
+        globals_dict = dict(
+            _evaluator_=evaluator, # Evaluate changed expressions.
+            log = log,             # Record information.
+            obj = obj,             # Object being tested.
+            )
+
+        eval(self.code, globals_dict)
+
+
 # This function helps defined the tranformation we want.
 def edit_expr(expr):
     '''Start making the changes I want.'''
@@ -25,10 +39,12 @@ def edit_expr(expr):
     if type(value) is ast.Compare:
         return  log_compare(value)
     else:
+        # TODO: Raise exception or warning?
         return expr             # Leave unchanged.
 
 
 # This function helps defined the tranformation we want.
+# TODO: Rename this function.
 def log_compare(node):
 
     # TODO: I think this is done, but is it?
@@ -105,10 +121,12 @@ if __name__ == '__main__':
         def compare(self, *argv):
             self.store.append(argv[1:]) # Discard local_dict.
 
-    # Here we create and test a script.
+    # Here we create and run a script.
     s = Script('2 + 2 == 5')
     evaluator = DummyEvaluator()
-    eval(s.code, dict(_evaluator_=evaluator))
+    s.run(evaluator)
+
+    # Now check the output is as expected.
     data = evaluator.store[0]
     assert data[0] == ['Eq']
     assert data[1] \
