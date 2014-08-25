@@ -28,6 +28,7 @@ todo tracebacks for test failure
 todo acknowledgements
 todo eat own dog food
 
+todo jython is Python 2.5 - no str.format, with from __future__
 
 TypeError: Error when calling the metaclass bases
     type 'code' is not an acceptable base type

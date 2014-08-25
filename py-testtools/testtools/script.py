@@ -8,13 +8,10 @@ class Script:
 
     def __init__(self, source, filename='<unknown>'):
 
+        # Parse source to tree, edit, compile and save resulting code.
         self.filename = filename
         tree = ast.parse(source, filename=self.filename)
-
-        # Replace some body expressions by calls to log.
         edit_body_exprs(edit_expr, tree)
-
-        # Save the compiled code.
         self.code = compile(tree, self.filename, 'exec')
 
 
@@ -48,16 +45,19 @@ def log_compare(node):
         ]
 
     # Done so return new node.
-    format = 'log._compare(globals(), locals(), {0}, {1})'.format
+    format = '_evaluator_.compare(locals(), {0}, {1})'.format
     # TODO: Clean up this mess.
     # TODO: Check that body appears just where I expect.
     if 0:
+        # TODO: Produces
+        # Expression(body=Call(func=Attribute(value=Name(id='log'
         new_tree = ast.parse(format(ops_arg, val_args), mode='eval')
-        # TODO: Above value produces: Expression(body=Call(func=Attribute(value=Name(id='log'
     else:
+        # TODOD: Produces
+        # Module(body=[Module(body=[Expr(value=Call( ...
         new_tree = ast.parse(format(ops_arg, val_args), mode='exec')
 
-    # To avoid: Module(body=[Module(body=[Expr(value=Call( ...
+    # Strip off unwanted boilerplate.
     return new_tree.body[0]
 
 
@@ -97,19 +97,19 @@ if __name__ == '__main__':
         script = Script(f.read())
 
     # Here's a dummy log, for testing Script.
-    class DummyLog:
+    class DummyEvaluator:
 
         def __init__(self):
             self.store = []
 
-        def _compare(self, *argv):
-            self.store.append(argv[2:])
+        def compare(self, *argv):
+            self.store.append(argv[1:]) # Discard local_dict.
 
     # Here we create and test a script.
     s = Script('2 + 2 == 5')
-    dummy = DummyLog()
-    eval(s.code, dict(log=dummy))
-    dummy.store[0]
-    assert dummy.store[0][0] == ['Eq']
-    assert dummy.store[0][1] \
+    evaluator = DummyEvaluator()
+    eval(s.code, dict(_evaluator_=evaluator))
+    data = evaluator.store[0]
+    assert data[0] == ['Eq']
+    assert data[1] \
         == [marshal.dumps(compile(s, '', 'eval')) for s in ('2 + 2', '5')]
