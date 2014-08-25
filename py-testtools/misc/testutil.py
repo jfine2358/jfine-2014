@@ -52,7 +52,7 @@ class TestSuite(object):
     def __init__(self, tests):
 
         self._tests = tuple(map(sequence_to_test, tests))
-        
+
     def __call__(self, fn):
 
         result = []
@@ -74,11 +74,11 @@ def addtests(*tests):
         results = test_suite(fn)
         # TODO: Reporting of results to be configurable.
         for index, failure in results:
-            print repr(test_suite._tests[index]._args)
-            print failure
+            print(repr(test_suite._tests[index]._args))
+            print(failure)
 
         return fn
-    
+
     return next
 
 
@@ -122,7 +122,7 @@ def try_apply(fn, argv=[], kwargs={}):
 
     try:
         value = fn(*argv, **kwargs)
-    except Exception, e:
+    except Exception as e:
         return ExceptionInstance(e)
     return ReturnValue(value)
 
@@ -144,18 +144,18 @@ class singleton(tuple):
 
     def __new__(cls, value):
         return tuple.__new__(cls, (value,))
-    
+
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__, self[0])
 
 
 class ReturnValue(singleton):
-    
+
     '''Holder for value returned by a function call.
 
     >>> ReturnValue('anything')
     ReturnValue('anything')
-    
+
     >>> x ={}; ReturnValue(x).value is x
     True
 
@@ -200,7 +200,7 @@ class Args(tuple):
 
     >>> Args()
     Args(argv=(), kwargs={})
-    
+
     >>> Args(1, 2, a=3, b=4)
     Args(argv=(1, 2), kwargs={'a': 3, 'b': 4})
 
@@ -288,7 +288,7 @@ class RaiseTest(object):
             return WrongException(self._expect, result.exception)
 
         return ExceptionExpected(self._expect, result.value)
-    
+
 
 
 def returns(_expect, *argv, **kwargs):
@@ -300,7 +300,7 @@ def returns(_expect, *argv, **kwargs):
     def next(fn):
         actual = fn(*argv, **kwargs)
         if actual != expect:
-            print actual, expect
+            print(actual, expect)
         return fn
 
     return next
@@ -321,10 +321,10 @@ if 0 and __name__ == '__main__':
     assert type(ReturnValue(1)) is ReturnValue
 
 
-    print Args(1, 2, 3, d=4, e=5)
+    print(Args(1, 2, 3, d=4, e=5))
 
-    print Args(1, 2).apply(plus)
-    print Args(1, '').apply(plus)
+    print(Args(1, 2).apply(plus))
+    print(Args(1, '').apply(plus))
 
 
 if __name__ == '__main__':
@@ -333,4 +333,4 @@ if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.ELLIPSIS)
 
 
-    print 'OK'
+    print('OK')
