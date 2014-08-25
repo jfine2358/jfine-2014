@@ -38,10 +38,12 @@ class _WrappedEvaluator:
     def __init__(self, inner):
         self._inner = inner
 
-    def compare(self, locals_dict, ops, vals):
+    def compare(self, *argv):
 
-        code_vals = [marshal.loads(s) for s in vals]
-        return self._inner.compare(locals_dict, ops, code_vals)
+        # Assume the code sequence is the last item.
+        argv = list(argv)
+        argv[-1] = [marshal.loads(s) for s in argv[-1]]
+        return self._inner.compare(*argv)
 
 
 # This function helps defined the tranformation we want.
@@ -76,7 +78,7 @@ def log_compare(node):
         ]
 
     # Done so return new node.
-    format = '_evaluator_.compare(locals(), {0}, {1})'.format
+    format = '_evaluator_.compare(locals(), globals(), {0}, {1})'.format
     # TODO: Clean up this mess.
     # TODO: Check that body appears just where I expect.
     if 0:
@@ -143,6 +145,6 @@ if __name__ == '__main__':
 
     # Now check the output is as expected.
     data = evaluator.store[0]
-    assert data[0] == ['Eq']
-    assert data[1] \
+    assert data[1] == ['Eq']
+    assert data[2] \
         == [compile(s, '', 'eval') for s in ('2 + 2', '5')]
