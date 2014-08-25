@@ -16,14 +16,16 @@ ValueExpected(expect=4, actual=TypeError("unsupported operand type(s) for +: 'in
 >>> RaiseTest(TypeError, 2, '')(lambda a, b: a + b) is None
 True
 
->>> RaiseTest(ValueError, 2, '')(lambda a, b: a + b)
-WrongException(expect=<type 'exceptions.ValueError'>, actual=TypeError("unsupported operand type(s) for +: 'int' and 'str'",))
+# Use subscript to restore Python2/3 compatility.
+>>> RaiseTest(ValueError, 2, '')(lambda a, b: a + b)[1]
+TypeError("unsupported operand type(s) for +: 'int' and 'str'",)
 
 >>> RaiseTest((TypeError, ValueError), 2, '')(lambda a, b: a + b) is None
 True
 
->>> RaiseTest(TypeError, 2, 2)(lambda a, b: a + b)
-ExceptionExpected(expect=<type 'exceptions.TypeError'>, actual=4)
+# Use subscript to restore Python2/3 compatility.
+>>> RaiseTest(TypeError, 2, 2)(lambda a, b: a + b)[1]
+4
 
 
 >>> test_suite = TestSuite([(4, 2, 2), ('ab', 'a', 'b'), (5, 2, 2)])
@@ -201,14 +203,18 @@ class Args(tuple):
     >>> Args()
     Args(argv=(), kwargs={})
 
-    >>> Args(1, 2, a=3, b=4)
-    Args(argv=(1, 2), kwargs={'a': 3, 'b': 4})
+    # TODO: Yuck.  In Python3 this fails intermittently.
+    # >>> Args(1, 2, a=3, b=4)
+    # Args(argv=(1, 2), kwargs={'a': 3, 'b': 4})
+
+    >>> Args(1, 2, a=3, b=4) == ((1, 2), dict(a=3, b=4))
+    True
 
     >>> Args(2, 2)(lambda a, b: a + b)
     4
 
-    >>> Args(a=1, b=2)(dict)
-    {'a': 1, 'b': 2}
+    >>> Args(a=1, b=2)(dict) == dict(a=1, b=2)
+    True
 
 
     >>> Args(2, 2).try_call(lambda a, b: a + b)
