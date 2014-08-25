@@ -78,3 +78,12 @@ def try_apply(fn, argv=[], kwargs={}):
         return ExceptionInstance(e)
     return ReturnValue(value)
 
+
+def try_eval(*argv):
+    '''Execute code, return either ReturnValue or ExceptionInstance.'''
+    try:
+        value = eval(*argv)
+    except Exception as e:
+        return ExceptionInstance(e)
+    return ReturnValue(value)
+

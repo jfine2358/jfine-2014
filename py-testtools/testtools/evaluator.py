@@ -1,6 +1,8 @@
 '''Evaluate expressions
 '''
 
+from trytools import try_eval
+
 __metaclass__ = type
 
 class Evaluator:
@@ -15,15 +17,6 @@ class Evaluator:
         values = [
             try_eval(code, globals_dict, locals_dict)
             for code in codes]
-
-
-def try_eval(code, globals_dict, locals_dict):
-
-    try:
-        value = eval(code, globals_dict, locals_dict)
-    except:
-        pass
-
 
 
 if __name__ == '__main__':
