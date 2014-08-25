@@ -18,8 +18,11 @@ class Script:
     def run(self, evaluator, log=None, obj=None):
         '''Run script, rewritten expression passed to evaluator.
 
-        The evaluator might be a test routine.
+        Code objects are passed to evaluator methods.  The evaluator
+        might be a test routine.
         '''
+
+        evaluator = _WrappedEvaluator(evaluator) # Interface mismatch.
         globals_dict = dict(
             _evaluator_=evaluator, # Evaluate changed expressions.
             log = log,             # Record information.
@@ -27,6 +30,18 @@ class Script:
             )
 
         eval(self.code, globals_dict)
+
+
+# To sort out an interface mismatch
+class _WrappedEvaluator:
+
+    def __init__(self, inner):
+        self._inner = inner
+
+    def compare(self, locals_dict, ops, vals):
+
+        code_vals = [marshal.loads(s) for s in vals]
+        return self._inner.compare(locals_dict, ops, code_vals)
 
 
 # This function helps defined the tranformation we want.
@@ -130,4 +145,4 @@ if __name__ == '__main__':
     data = evaluator.store[0]
     assert data[0] == ['Eq']
     assert data[1] \
-        == [marshal.dumps(compile(s, '', 'eval')) for s in ('2 + 2', '5')]
+        == [compile(s, '', 'eval') for s in ('2 + 2', '5')]
