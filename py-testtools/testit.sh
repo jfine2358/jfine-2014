@@ -8,3 +8,6 @@
 
 python2 testtools/script.py
 python3 testtools/script.py
+
+python2 testtools/evaluator.py
+python3 testtools/evaluator.py
