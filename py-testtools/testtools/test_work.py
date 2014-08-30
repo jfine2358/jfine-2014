@@ -23,15 +23,23 @@ if __name__ == '__main__':
         script = Script(f.read())
 
     # Create the globals_dict we will test.
+    globals_dict = {}
+
+    # Create the globals_dict we will test.
+    ast_names = 'Compare Eq Lt Num'.split()
+    globals_dict.update(
+        (k, getattr(ast,k))
+        for k in ast_names
+        )
+
+    globals_dict.update(
+        ast = ast,
+        dpe = dump_parse_expr,
+        )
+
+
     evaluator = Evaluator()
-    script.run(evaluator, dict(
-            ast = ast,
-            Eq = ast.Eq,
-            Compare = ast.Compare,
-            Lt = ast.Lt,
-            Num = ast.Num,
-            dpe = dump_parse_expr,
-            ))
+    script.run(evaluator, globals_dict)
 
     # Report on the outcome.
     success_count = 0
