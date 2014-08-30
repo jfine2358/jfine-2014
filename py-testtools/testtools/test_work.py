@@ -26,7 +26,7 @@ if __name__ == '__main__':
     globals_dict = {}
 
     # Create the globals_dict we will test.
-    ast_names = 'Compare Eq Lt Num'.split()
+    ast_names = 'Attribute Call Compare Eq Load Lt Name Num'.split()
     globals_dict.update(
         (k, getattr(ast,k))
         for k in ast_names
