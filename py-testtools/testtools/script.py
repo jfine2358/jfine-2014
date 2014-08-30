@@ -15,18 +15,18 @@ class Script:
         self.code = compile(tree, self.filename, 'exec')
 
 
-    def run(self, evaluator, log=None, obj=None):
+    def run(self, evaluator, globals_dict=None):
         '''Run script, rewritten expression passed to evaluator.
 
         Code objects are passed to evaluator methods.  The evaluator
         might be a test routine.
         '''
+        if globals_dict is None:
+            globals_dict = {}
 
         evaluator = _WrappedEvaluator(evaluator) # Interface mismatch.
-        globals_dict = dict(
+        globals_dict.update(
             _evaluator_=evaluator, # Evaluate changed expressions.
-            log = log,             # Record information.
-            obj = obj,             # Object being tested.
             )
 
         eval(self.code, globals_dict)
