@@ -7,6 +7,12 @@ from evaluator import Evaluator
 from script import Script
 
 
+def dump_parse_expr(s):
+
+    tree = ast.parse(s, mode='eval')
+    return ast.dump(tree.body)
+
+
 if __name__ == '__main__':
 
     # Boilerplate.
@@ -19,8 +25,9 @@ if __name__ == '__main__':
     # Create the globals_dict we will test.
     evaluator = Evaluator()
     script.run(evaluator, dict(
+            ast = ast,
             Eq = ast.Eq,
-            a = 5,
+            dpe = dump_parse_expr,
             ))
 
     # Report on the outcome.
@@ -29,7 +36,7 @@ if __name__ == '__main__':
         if val is None:
             success_count += 1
 
-    print('Total of {0} tests, {1} success'.format(len(evaluator.data), success_count))
+    print('Total of {0} tests, {1} success.'.format(len(evaluator.data), success_count))
 
     for i, val in enumerate(evaluator.data, 1):
         if val is not None:

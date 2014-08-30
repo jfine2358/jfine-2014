@@ -11,6 +11,7 @@ compare_dict = dict(
     # TODO: Finish this dict.
     Eq = operator.eq,
     Lt = operator.lt,
+    NotEq = operator.ne,
     )
 
 
