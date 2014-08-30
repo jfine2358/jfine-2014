@@ -27,6 +27,9 @@ if __name__ == '__main__':
     script.run(evaluator, dict(
             ast = ast,
             Eq = ast.Eq,
+            Compare = ast.Compare,
+            Lt = ast.Lt,
+            Num = ast.Num,
             dpe = dump_parse_expr,
             ))
 
