@@ -54,8 +54,25 @@ class Evaluator:
 
     def pow(self, locals_dict, globals_dict, codes):
 
-        # TODO: Dummy - always passes.
-        self.data.append(None)
+        clean = True
+        left, right = values = [
+            try_eval(code, globals_dict, locals_dict)
+            for code in codes
+            ]
+
+        if left.exception is None:
+            if right.exception:
+                self.data.append(values)
+            else:
+                self.data.append('Expected but did not get exception')
+            return
+
+        if isinstance(left.exception, right.value):
+            self.data.append(None)
+            return
+        else:
+            self.data.append(values)
+
 
 
 
@@ -64,7 +81,14 @@ if __name__ == '__main__':
     from script import Script
     from trytools import ReturnValue, ExceptionInstance
 
-    s = Script('''2 + 2 == 5; 2 + 2 == 4; 1 + '' < 4 ; 2 < 3; (1 + '1') ** ValueError''')
+    s = Script('''
+2 + 2 == 5
+2 + 2 == 4
+1 + '' < 4
+2 < 3
+(1 + '1') ** TypeError
+(1 + 1) ** Exception
+''')
     expect = [
         [ReturnValue(4), ReturnValue(5)],
         None,
@@ -76,6 +100,7 @@ if __name__ == '__main__':
             ],
         None,
         None,
+        'Expected but did not get exception',
         ]
 
     evaluator = Evaluator()
@@ -88,4 +113,4 @@ if __name__ == '__main__':
     for i in range(len(expect)):
         if i == 2:
             continue            # TypeError('') != TypeError('')
-        assert actual[i] == expect[i]
+        assert actual[i] == expect[i], (i, actual[i])
