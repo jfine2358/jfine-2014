@@ -45,6 +45,14 @@ class _WrappedEvaluator:
         argv[-1] = [marshal.loads(s) for s in argv[-1]]
         return self._inner.compare(*argv)
 
+    def pow(self, *argv):
+
+        # Assume the code sequence is the last item.
+        argv = list(argv)
+        argv[-1] = [marshal.loads(s) for s in argv[-1]]
+        return self._inner.pow(*argv)
+
+
 
 # This function helps defined the tranformation we want.
 def edit_expr(expr):
@@ -54,7 +62,9 @@ def edit_expr(expr):
 
     # Filter the comparisons for change.
     if type(value) is ast.Compare:
-        return  log_compare(value)
+        return log_compare(value)
+    elif type(value) is ast.BinOp and type(value.op) == ast.Pow:
+        return log_pow(value)
     else:
         # TODO: Raise exception or warning?
         return expr             # Leave unchanged.
@@ -91,6 +101,19 @@ def log_compare(node):
         new_tree = ast.parse(format(ops_arg, val_args), mode='exec')
 
     # Strip off unwanted boilerplate.
+    return new_tree.body[0]
+
+
+def log_pow(node):
+
+    val_args = [
+        marshal.dumps(compile(ast.Expression(v), '', 'eval'))
+        for v in (node.left, node.right)
+        ]
+
+    format = '_evaluator_.pow(locals(), globals(), {0})'.format
+    new_tree = ast.parse(format(val_args), mode='exec')
+
     return new_tree.body[0]
 
 

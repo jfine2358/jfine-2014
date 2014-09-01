@@ -52,12 +52,19 @@ class Evaluator:
             self.data.append(values)
 
 
+    def pow(self, locals_dict, globals_dict, codes):
+
+        # TODO: Dummy - always passes.
+        self.data.append(None)
+
+
+
 if __name__ == '__main__':
 
     from script import Script
     from trytools import ReturnValue, ExceptionInstance
 
-    s = Script('''2 + 2 == 5; 2 + 2 == 4; 1 + '' < 4 ; 2 < 3''')
+    s = Script('''2 + 2 == 5; 2 + 2 == 4; 1 + '' < 4 ; 2 < 3; (1 + '1') ** ValueError''')
     expect = [
         [ReturnValue(4), ReturnValue(5)],
         None,
@@ -67,7 +74,8 @@ if __name__ == '__main__':
                 ),
             ReturnValue(4)
             ],
-        None
+        None,
+        None,
         ]
 
     evaluator = Evaluator()
@@ -76,7 +84,8 @@ if __name__ == '__main__':
 
     assert TypeError('') != TypeError('')
 
-    for i in range(4):
+    assert len(expect) == len(actual), (len(expect), len(actual))
+    for i in range(len(expect)):
         if i == 2:
             continue            # TypeError('') != TypeError('')
         assert actual[i] == expect[i]
