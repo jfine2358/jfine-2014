@@ -42,7 +42,7 @@ def pairs_from_iter(items):
 
     iterator = iter(items)
     while 1:
-        yield iterator.next(), iterator.next()
+        yield next(iterator), next(iterator)
 
 list(pairs_from_iter(range(6))) == [(0, 1), (2, 3), (4, 5)]
 
@@ -50,7 +50,7 @@ def triples_from_iter(items):
 
     iterator = iter(items)
     while 1:
-        yield iterator.next(), iterator.next(), iterator.next()
+        yield next(iterator), next(iterator), next(iterator)
 
 
 # Here's a nice way to do a data loop.
